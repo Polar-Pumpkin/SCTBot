@@ -77,9 +77,10 @@
             <Reward Target="Tag" Type="ESSENCE" PPoint="20"/>
             <Reward Target="Tag" Type="PERMITTED" PPoint="20"/>
         </Rewards>
-        <Checkers>
-            <Checker Value="1224748848"/>
-            <Checker Value="3023937153"/>
-        </Checkers>
     </Workcheck>
+
+    <Admins>
+        <Admin Value="1224748848"/>
+        <Admin Value="3023937153"/>
+    </Admins>
 </Setting>

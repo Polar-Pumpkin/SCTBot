@@ -48,7 +48,7 @@ public class CommandHandler {
         String[] args = BasicUtil.buildParameter(srcArgs);
         boolean exist = SCTBot.CC.getAt(srcArgs[0]) == SCTBot.CQ.getLoginQQ() || srcArgs[0].equalsIgnoreCase("~");
         if(exist) {
-            if(args.length <= 2) {
+            if(args.length == 1) {
                 SCTBot.CQ.sendGroupMsg(number, "你参数好像有点少, 这个判断是防止你崩机器人用的, 等我写完帮助文档就会删掉.");
                 return;
             }

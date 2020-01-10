@@ -85,15 +85,15 @@ public class Members implements Subcommand {
                 ppoint:amount
                 bbs:username,uid
                 wechat:id
-                actionlog:index,type,date,additional;...
-
+                ...
                  */
-                if(args.length >=5 && args.length <=10) {
-                    // TODO 新指令
-                    if(null != null) {
-                        SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "保存成功. ^^");
+                if(args.length >= 4 && args.length <= 10) {
+                    long memberQQ = BasicUtil.getQQ(args[2]);
+                    SCTMember result = MemberManager.getInstance().modify(memberQQ, args);
+                    if(result != null) {
+                        SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "修改成功. ^^");
                     } else {
-                        SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "不知道为啥保存不了, 可能是因为已经存在一个有效的档案了吧.");
+                        SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "修改不了啊, 目标没有有效档案给我修改啊.");
                     }
                 } else {
                     SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "我觉得你参数写错了.");

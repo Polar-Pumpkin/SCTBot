@@ -31,6 +31,17 @@ import java.util.*;
 
 public class XMLUtil {
 
+    public static Document create() {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            return db.newDocument();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static Document load(@NonNull File file) {
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -170,97 +181,86 @@ public class XMLUtil {
 
         File output = new File(path.toString());
 
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
-        try {
-            db = dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+        Document document = create();
+        Element root = document.createElement("SCTMember");
+
+        Element nickname = document.createElement("Nickname");
+        nickname.setAttribute("Value", member.getNickname());
+        setChild(root, nickname);
+
+        Calendar birth = member.getBirth();
+        if (birth != null) {
+            Element birthElem = document.createElement("Birth");
+            birthElem.setAttribute("Date", TimeUtil.format(birth, "yyyy-MM-dd"));
+            setChild(root, birthElem);
         }
-        if (db != null) {
-            Document document = db.newDocument();
-            Element root = document.createElement("SCTMember");
 
-
-            Element nickname = document.createElement("Nickname");
-            nickname.setAttribute("Value", member.getNickname());
-            setChild(root, nickname);
-
-            Calendar birth = member.getBirth();
-            if (birth != null) {
-                Element birthElem = document.createElement("Birth");
-                birthElem.setAttribute("Date", TimeUtil.format(birth, "yyyy-MM-dd"));
-                setChild(root, birthElem);
-            }
-
-            Element departments = document.createElement("Departments");
-            Map<String, String> departmentMap = member.getDepartment();
-            for (String id : departmentMap.keySet()) {
-                Element department = document.createElement("Department");
-                department.setAttribute("ID", id);
-                department.setAttribute("Position", departmentMap.get(id));
-                setChild(departments, department);
-            }
-            setChild(root, departments);
-
-            Element ppoint = document.createElement("PPoint");
-            ppoint.setAttribute("Amount", String.valueOf(member.getPpoint()));
-            setChild(root, ppoint);
-
-            Element contacts = document.createElement("Contacts");
-            Map<String, ContactDetail> contactMap = member.getContacts();
-            for (String id : contactMap.keySet()) {
-                ContactDetail detail = contactMap.get(id);
-                if (detail != null) {
-                    Element targetContact = document.createElement(id);
-                    targetContact.setAttribute("ID", detail.getIdNumber());
-                    if (!detail.getUsername().equalsIgnoreCase("")) {
-                        targetContact.setAttribute("Username", detail.getUsername());
-                    }
-                    setChild(contacts, targetContact);
-                }
-            }
-            setChild(root, contacts);
-
-            Element actionlogs = document.createElement("Actionlogs");
-            List<Actionlog> actionlogList = member.getLogs();
-            for (Actionlog log : actionlogList) {
-                Element targetActionlog = document.createElement("Actionlog");
-                targetActionlog.setAttribute("Type", log.getType().toString());
-                targetActionlog.setAttribute("Date", TimeUtil.format(log.getDate(), "yyyy-MM-dd"));
-                targetActionlog.setAttribute("Additional", log.getAdditional());
-                setChild(actionlogs, targetActionlog);
-            }
-            setChild(root, actionlogs);
-
-            Element works = document.createElement("Works");
-            List<Work> workList = member.getWorks();
-            for (Work work : workList) {
-                Element targetWork = document.createElement("Work");
-                targetWork.setAttribute("Type", work.getType().toString());
-                targetWork.setAttribute("Url", work.getUrl());
-                targetWork.setAttribute("Date", TimeUtil.format(work.getDate(), "yyyy-MM-dd"));
-                targetWork.setAttribute("Highlight", work.getHighlight().toString());
-                targetWork.setAttribute("Rating", work.getRating());
-
-                List<TagType> tagList = work.getTags();
-                if (!tagList.isEmpty()) {
-                    Element tags = document.createElement("Tags");
-                    for (TagType tag : tagList) {
-                        Element targetTag = document.createElement("Tag");
-                        targetTag.setAttribute("Type", tag.toString());
-                        setChild(tags, targetTag);
-                    }
-                    setChild(targetWork, tags);
-                }
-                setChild(works, targetWork);
-            }
-            setChild(root, works);
-
-            document.appendChild(root);
-            return save(document, output);
+        Element departments = document.createElement("Departments");
+        Map<String, String> departmentMap = member.getDepartment();
+        for (String id : departmentMap.keySet()) {
+            Element department = document.createElement("Department");
+            department.setAttribute("ID", id);
+            department.setAttribute("Position", departmentMap.get(id));
+            setChild(departments, department);
         }
-        return false;
+        setChild(root, departments);
+
+        Element ppoint = document.createElement("PPoint");
+        ppoint.setAttribute("Amount", String.valueOf(member.getPpoint()));
+        setChild(root, ppoint);
+
+        Element contacts = document.createElement("Contacts");
+        Map<String, ContactDetail> contactMap = member.getContacts();
+        for (String id : contactMap.keySet()) {
+            ContactDetail detail = contactMap.get(id);
+            if (detail != null) {
+                Element targetContact = document.createElement(id);
+                targetContact.setAttribute("ID", detail.getIdNumber());
+                if (!detail.getUsername().equalsIgnoreCase("")) {
+                    targetContact.setAttribute("Username", detail.getUsername());
+                }
+                setChild(contacts, targetContact);
+            }
+        }
+        setChild(root, contacts);
+
+        Element actionlogs = document.createElement("Actionlogs");
+        List<Actionlog> actionlogList = member.getLogs();
+        for (Actionlog log : actionlogList) {
+            Element targetActionlog = document.createElement("Actionlog");
+            targetActionlog.setAttribute("Type", log.getType().toString());
+            targetActionlog.setAttribute("Date", TimeUtil.format(log.getDate(), "yyyy-MM-dd"));
+            targetActionlog.setAttribute("Additional", log.getAdditional());
+            setChild(actionlogs, targetActionlog);
+        }
+        setChild(root, actionlogs);
+
+        Element works = document.createElement("Works");
+        List<Work> workList = member.getWorks();
+        for (Work work : workList) {
+            Element targetWork = document.createElement("Work");
+            targetWork.setAttribute("Type", work.getType().toString());
+            targetWork.setAttribute("Url", work.getUrl());
+            targetWork.setAttribute("Date", TimeUtil.format(work.getDate(), "yyyy-MM-dd"));
+            targetWork.setAttribute("Highlight", work.getHighlight().toString());
+            targetWork.setAttribute("Rating", work.getRating());
+
+            List<TagType> tagList = work.getTags();
+            if (!tagList.isEmpty()) {
+                Element tags = document.createElement("Tags");
+                for (TagType tag : tagList) {
+                    Element targetTag = document.createElement("Tag");
+                    targetTag.setAttribute("Type", tag.toString());
+                    setChild(tags, targetTag);
+                }
+                setChild(targetWork, tags);
+            }
+            setChild(works, targetWork);
+        }
+        setChild(root, works);
+
+        document.appendChild(root);
+        return save(document, output);
     }
 
 }
