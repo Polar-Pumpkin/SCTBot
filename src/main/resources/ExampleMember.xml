@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SCTMember>
+    <Nickname Value="示例组员"/>
+    <Birth Date="2000-1-1"/>
+    <Departments>
+        <Department ID="Developer" Position="骨干"/>
+        <Department ID="Redistributor" Position="部员"/>
+    </Departments>
+    <PPoint Amount="233"/>
+
+    <Contacts>
+        <BBS Username="username" ID="1"/>
+        <QQ ID="0000000000"/>
+        <Wechat ID="0000000000"/>
+    </Contacts>
+
+    <Actionlogs>
+        <Actionlog Type="LOG" Date="2020-1-4" Additional="使用机器人登记保存档案"/>
+        <Actionlog Type="QUIT" Date="2000-1-4" Additional="学业繁忙,暂时退组."/>
+        <Actionlog Type="PASS" Date="2000-1-3" Additional="作品检查通过."/>
+        <Actionlog Type="PPOINT" Date="2000-1-2" Additional="消耗233P点数."/>
+        <Actionlog Type="JOIN" Date="2000-1-1" Additional="加入小组."/>
+    </Actionlogs>
+
+    <Works>
+        <Work Type="PLUGIN" Url="https://www.mcbbs.net" Date="2000-1-1" Highlight="BLUE_BOLD" Rating="S">
+            <Tags>
+                <Tag Type="ESSENCE"/>
+            </Tags>
+        </Work>
+        <Work Type="REDISTRIBUTE" Url="https://www.mcbbs.net" Date="2000-1-1" Highlight="GREEN" Rating="B">
+            <Tags>
+                <Tag Type="EXCELLENT"/>
+                <Tag Type="PERMITTED"/>
+            </Tags>
+        </Work>
+    </Works>
+</SCTMember>

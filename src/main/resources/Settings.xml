@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Setting>
+    <Subscriptions>
+        <Subscription Target="newthread">
+            <Interval Hour="1"/> <!-- RSS订阅时间间隔(h) -->
+            <Broadcast>
+                通知 | Notification
+                组员 %Author% 发布了新作品(%PostType%):
+                > %PostTitle%
+
+                已自动登记入本季度作品检查. ^_^
+                > %url%
+            </Broadcast>
+        </Subscription>
+        <Subscription Target="Digest">
+            <Interval Hour="168"/>
+            <Broadcast>
+                喜报 | Congratulation
+                组员 %Author% 的作品(%PostType%) 获得了精华:
+                > %PostTitle%
+
+                已自动登记入本季度作品检查. ^_^
+                > %url%
+            </Broadcast>
+        </Subscription>
+    </Subscriptions>
+
+    <Departments>
+        <Department ID="Developer" Display="开发"/>
+        <Department ID="Redistributor" Display="搬运"/>
+        <Department ID="ArtWorker" Display="美工"/>
+        <Department ID="Builder" Display="建筑"/>
+        <Department ID="Translator" Display="翻译"/>
+        <Department ID="Other" Display="其他"/>
+        <Department ID="Robot" Display="BOT"/>
+    </Departments>
+
+    <Groupcard>[%Department%]%Nick%(%BBSUsername%)</Groupcard>
+
+    <Workcheck>
+        <Duration Month="3"/> <!-- 作品检查时间间隔(M) -->
+        <Timepoints>
+            <Timepoint Month="1"/>
+            <Timepoint Month="4"/>
+            <Timepoint Month="7"/>
+            <Timepoint Month="10"/>
+        </Timepoints>
+        <Requirements>
+            <Requirement Department="Developer" Amount="3" PPoint="50"/>
+            <Requirement Department="Redistributor" Amount="12" PPoint="100"/>
+        </Requirements>
+        <Punishments>
+            <Punishment Type="WARN" Times="1" Message="您上季度作品检查未通过, 请注意: 连续三次作品检查不通过将会被踢出小组."/>
+            <Punishment Type="MUTE" Times="2" Message="您连续 2 季度作品检查未通过, 请注意: 连续三次作品检查不通过将会被踢出小组."/>
+            <Punishment Type="KICK" Times="3" Message="您已连续 3 季度作品检查未通过, 已将您暂时踢出小组, 若有特殊情况请联系管理员加回, 对此造成的不便我们深表歉意."/>
+        </Punishments>
+        <Rewards>
+            <Reward Target="Rating" Type="S" PPoint="15"/>
+            <Reward Target="Rating" Type="A" PPoint="10"/>
+            <Reward Target="Rating" Type="B" PPoint="6"/>
+            <Reward Target="Rating" Type="C" PPoint="3"/>
+            <Reward Target="Rating" Type="D" PPoint="1"/>
+            <Reward Target="Rating" Type="F" PPoint="-5"/>
+
+            <Reward Target="Highlight" Type="BOLD" PPoint="2"/>
+            <Reward Target="Highlight" Type="GREEN" PPoint="2"/>
+            <Reward Target="Highlight" Type="GREEN_BOLD" PPoint="3"/>
+            <Reward Target="Highlight" Type="BLUE" PPoint="3"/>
+            <Reward Target="Highlight" Type="BLUE_BOLD" PPoint="4"/>
+            <Reward Target="Highlight" Type="PURPLE" PPoint="5"/>
+            <Reward Target="Highlight" Type="PURPLE_BOLD" PPoint="7"/>
+            <Reward Target="Highlight" Type="GOLD" PPoint="8"/>
+            <Reward Target="Highlight" Type="GOLD_BOLD" PPoint="10"/>
+            <Reward Target="Highlight" Type="PINK" PPoint="20"/>
+
+            <Reward Target="Tag" Type="EXCELLENT" PPoint="20"/>
+            <Reward Target="Tag" Type="ESSENCE" PPoint="20"/>
+            <Reward Target="Tag" Type="PERMITTED" PPoint="20"/>
+        </Rewards>
+        <Checkers>
+            <Checker Value="1224748848"/>
+            <Checker Value="3023937153"/>
+        </Checkers>
+    </Workcheck>
+</Setting>
