@@ -1,12 +1,6 @@
 package org.serverct.utils;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
+import lombok.NonNull;
 import org.serverct.config.MemberManager;
 import org.serverct.data.Actionlog;
 import org.serverct.data.ContactDetail;
@@ -16,159 +10,257 @@ import org.serverct.enums.ActionlogType;
 import org.serverct.enums.HighlightType;
 import org.serverct.enums.TagType;
 import org.serverct.enums.WorkType;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 
 public class XMLUtil {
 
-    public static Document parse(URL url) throws DocumentException {
-        return new SAXReader().read(url);
+    public static Document load(@NonNull File file) {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            return db.parse(file);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    public static SCTMember loadMember(File file) throws DocumentException {
-        BasicUtil.quickDebug("尝试读取成员档案: " + file.getName());
-        SAXReader reader = new SAXReader();
-        Document memberDoc = reader.read(file);
-        BasicUtil.quickDebug("我读出来了: " + memberDoc.toString());
-        Element sctMember = memberDoc.getRootElement();
-        BasicUtil.quickDebug("根节点是 " + sctMember.getName());
+    public static boolean save(Document xmldoc, File file) {
+        try {
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer former = factory.newTransformer();
+            former.setOutputProperty(OutputKeys.INDENT, "yes");
+            former.transform(new DOMSource(xmldoc), new StreamResult(file));
+            return true;
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-        String nickname = sctMember.element("Nickname").attributeValue("Value");
+    public static Node getNode(@NonNull Node element, String nodeName) {
+        NodeList nodes = element.getChildNodes();
+        for(int index = 0;index < nodes.getLength();index++) {
+            Node node = nodes.item(index);
+            if(node.getNodeName().equalsIgnoreCase(nodeName)) {
+                return node;
+            }
+        }
+        return null;
+    }
 
-        Calendar birth = TimeUtil.getCalender(sctMember.element("Birth").attributeValue("Date"));
+    public static List<Node> getChilds(@NonNull Node element) {
+        List<Node> result = new ArrayList<>();
+        NodeList nodes = element.getChildNodes();
+        for(int index = 0;index < nodes.getLength();index++) {
+            result.add(nodes.item(index));
+        }
+        return result;
+    }
+
+    public static Node setChild(@NonNull Node node, Element element) {
+        node.appendChild(element);
+        return node;
+    }
+
+    public static String getAttr(@NonNull Node element, String attrName) {
+        return element.getAttributes().getNamedItem(attrName).getNodeValue();
+    }
+
+    public static SCTMember loadMember(File file) {
+        Document memberDoc = load(file);
+        Element sctMember = memberDoc.getDocumentElement();
+
+        Node nickname = getNode(sctMember, "Nickname");
+        String nicknameStr = getAttr(nickname, "Value");
+
+        Node birth = getNode(sctMember, "Birth");
+        Calendar birthCal = TimeUtil.getCalender(getAttr(birth, "Date"));
+
 
         Map<String, String> departmentsMap = new HashMap<>();
-        Element departments = sctMember.element("Departments");
-        for(Element department : departments.elements()) {
-            departmentsMap.put(department.attributeValue("ID"), department.attributeValue("Position"));
+        Node departments = getNode(sctMember, "Departments");
+        for(Node department : getChilds(departments)) {
+            departmentsMap.put(getAttr(department, "ID"), getAttr(department, "Position"));
         }
 
-        int ppoint = Integer.parseInt(sctMember.element("PPoint").attributeValue("Amount"));
+        Node ppoint = getNode(sctMember, "PPoint");
+        int ppointInt = Integer.parseInt(getAttr(ppoint, "Amount"));
 
         Map<String, ContactDetail> contactsMap = new HashMap<>();
-        Element contacts = sctMember.element("Contacts");
-        for(Element contact : contacts.elements()) {
-            if(contact.getName().equalsIgnoreCase("BBS")) {
-                contactsMap.put("BBS", new ContactDetail("BBS", contact.attributeValue("Username"), contact.attributeValue("ID")));
+        Node contacts = getNode(sctMember, "Contacts");
+        for(Node contact : getChilds(contacts)) {
+            String contactID = contact.getNodeName();
+            if(contactID.equalsIgnoreCase("BBS")) {
+                contactsMap.put(contactID, new ContactDetail(contactID, getAttr(contact, "Username"), getAttr(contact, "ID")));
             } else {
-                contactsMap.put(contact.getName(), new ContactDetail(contact.getName(), "", contact.attributeValue("ID")));
+                contactsMap.put(contactID, new ContactDetail(contactID, "", getAttr(contact, "ID")));
             }
         }
 
         List<Actionlog> actionlogList = new ArrayList<>();
-        Element actionlogs = sctMember.element("Actionlogs");
-        List<Element> actionlogNodes = actionlogs.elements();
+        Node actionlogs = getNode(sctMember, "Actionlogs");
+        List<Node> actionlogNodes = getChilds(actionlogs);
         if(!actionlogNodes.isEmpty()) {
-            for(Element actionlog : actionlogs.elements()) {
-                actionlogList.add(new Actionlog(ActionlogType.valueOf(actionlog.attributeValue("Type").toUpperCase()),
-                        TimeUtil.getCalender(actionlog.attributeValue("Date")),
-                        actionlog.attributeValue("Additional")));
+            for(Node actionlog : actionlogNodes) {
+                actionlogList.add(
+                        new Actionlog(
+                                ActionlogType.valueOf(getAttr(actionlog, "Type").toUpperCase()),
+                                TimeUtil.getCalender(getAttr(actionlog, "Date")),
+                                getAttr(actionlog, "Additional")
+                        )
+                );
             }
         }
 
         List<Work> workList = new ArrayList<>();
-        Element works = sctMember.element("Works");
-        List<Element> workNodes = works.elements();
+        Node works = getNode(sctMember, "Works");
+        List<Node> workNodes = getChilds(works);
         if(!workNodes.isEmpty()) {
-            for(Element work : workNodes) {
+            for(Node work : workNodes) {
                 List<TagType> tagList = new ArrayList<>();
-                Element tags = work.element("Tags");
+                Node tags = getNode(work, "Tags");
                 try {
-                    for(Element tag : tags.elements()) {
-                        tagList.add(TagType.valueOf(tag.attributeValue("Type").toUpperCase()));
+                    for(Node tag : getChilds(tags)) {
+                        tagList.add(TagType.valueOf(getAttr(tag, "Type").toUpperCase()));
                     }
                 } catch(Throwable ignored) {}
 
-                workList.add(new Work(WorkType.valueOf(work.attributeValue("Type").toUpperCase()),
-                        work.attributeValue("Url"),
-                        TimeUtil.getCalender(work.attributeValue("Date")),
-                        tagList,
-                        HighlightType.valueOf(work.attributeValue("Highlight").toUpperCase()),
-                        work.attributeValue("Rating")));
+                workList.add(
+                        new Work(
+                                WorkType.valueOf(getAttr(work, "Type").toUpperCase()),
+                                getAttr(work, "Url"),
+                                TimeUtil.getCalender(getAttr(work, "Date")),
+                                tagList,
+                                HighlightType.valueOf(getAttr(work, "Highlight").toUpperCase()),
+                                getAttr(work, "Rating")
+                        )
+                );
             }
         }
 
-        SCTMember result = new SCTMember(nickname, birth, departmentsMap, ppoint, contactsMap, actionlogList, workList);
-        BasicUtil.quickDebug("最后读出来的是: " + result.toString());
-        return result;
+        return new SCTMember(nicknameStr, birthCal, departmentsMap, ppointInt, contactsMap, actionlogList, workList);
     }
 
     public static boolean saveMember(SCTMember member) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement("SCTMember");
+        StringBuilder path = new StringBuilder(MemberManager.getInstance().getDataFolder().getAbsolutePath());
+        path
+                .append(File.separator)
+                .append(member.getContacts().get("QQ").getIdNumber())
+                .append("-")
+                .append(member.getNickname())
+                .append(".xml");
 
-        root.addElement("Nickname").addAttribute("Value", member.getNickname());
+        File output = new File(path.toString());
 
-        Calendar birth = member.getBirth();
-        if(birth != null) {
-            root.addElement("Birth")
-                    .addAttribute("Date", TimeUtil.format(birth, "yyyy-MM-dd"));
-        }
-
-        Element departments = root.addElement("Departments");
-        Map<String, String> departmentMap = member.getDepartment();
-        for(String id : departmentMap.keySet()) {
-            departments.addElement("Department")
-                    .addAttribute("ID", id)
-                    .addAttribute("Position", departmentMap.get(id));
-        }
-
-        root.addElement("PPoint").addAttribute("Amount", String.valueOf(member.getPpoint()));
-
-        Element contacts = root.addElement("Contacts");
-        Map<String, ContactDetail> contactMap = member.getContacts();
-        for(String id : contactMap.keySet()) {
-            ContactDetail detail = contactMap.get(id);
-            if(detail != null) {
-                Element targetContact = contacts.addElement(id)
-                        .addAttribute("ID", detail.getIdNumber());
-                if(!detail.getUsername().equalsIgnoreCase("")) {
-                    targetContact.addAttribute("Username", detail.getUsername());
-                }
-            }
-        }
-
-        Element actionlogs = root.addElement("Actionlogs");
-        List<Actionlog> actionlogList = member.getLogs();
-        for(Actionlog log : actionlogList) {
-            actionlogs.addElement("Actionlog")
-                    .addAttribute("Type", log.getType().toString())
-                    .addAttribute("Date", TimeUtil.format(log.getDate(), "yyyy-MM-dd"))
-                    .addAttribute("Additional", log.getAdditional());
-        }
-
-        Element works = root.addElement("Works");
-        List<Work> workList = member.getWorks();
-        for(Work work : workList) {
-            Element workNode = works.addElement("Work")
-                    .addAttribute("Type", work.getType().toString())
-                    .addAttribute("Url", work.getUrl())
-                    .addAttribute("Date", TimeUtil.format(work.getDate(), "yyyy-MM-dd"))
-                    .addAttribute("Highlight", work.getHighlight().toString())
-                    .addAttribute("Rating", work.getRating());
-            List<TagType> tagList = work.getTags();
-            if(!tagList.isEmpty()) {
-                Element tags = workNode.addElement("Tags");
-                for(TagType tag : tagList) {
-                    tags.addElement("Tag")
-                            .addAttribute("Type", tag.toString());
-                }
-            }
-        }
-
-        try (FileWriter fileWriter = new FileWriter(new File(MemberManager.getInstance().getDataFolder().getAbsolutePath() + File.separator + member.getContacts().get("QQ").getIdNumber() + ".xml"))) {
-            OutputFormat format = OutputFormat.createPrettyPrint();
-            XMLWriter writer = new XMLWriter(fileWriter, format);
-            writer.write(document);
-            writer.close();
-        } catch (IOException e) {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
-        return true;
+        if (db != null) {
+            Document document = db.newDocument();
+            Element root = document.createElement("SCTMember");
+
+
+            Element nickname = document.createElement("Nickname");
+            nickname.setAttribute("Value", member.getNickname());
+            setChild(root, nickname);
+
+            Calendar birth = member.getBirth();
+            if (birth != null) {
+                Element birthElem = document.createElement("Birth");
+                birthElem.setAttribute("Date", TimeUtil.format(birth, "yyyy-MM-dd"));
+                setChild(root, birthElem);
+            }
+
+            Element departments = document.createElement("Departments");
+            Map<String, String> departmentMap = member.getDepartment();
+            for (String id : departmentMap.keySet()) {
+                Element department = document.createElement("Department");
+                department.setAttribute("ID", id);
+                department.setAttribute("Position", departmentMap.get(id));
+                setChild(departments, department);
+            }
+            setChild(root, departments);
+
+            Element ppoint = document.createElement("PPoint");
+            ppoint.setAttribute("Amount", String.valueOf(member.getPpoint()));
+            setChild(root, ppoint);
+
+            Element contacts = document.createElement("Contacts");
+            Map<String, ContactDetail> contactMap = member.getContacts();
+            for (String id : contactMap.keySet()) {
+                ContactDetail detail = contactMap.get(id);
+                if (detail != null) {
+                    Element targetContact = document.createElement(id);
+                    targetContact.setAttribute("ID", detail.getIdNumber());
+                    if (!detail.getUsername().equalsIgnoreCase("")) {
+                        targetContact.setAttribute("Username", detail.getUsername());
+                    }
+                    setChild(contacts, targetContact);
+                }
+            }
+            setChild(root, contacts);
+
+            Element actionlogs = document.createElement("Actionlogs");
+            List<Actionlog> actionlogList = member.getLogs();
+            for (Actionlog log : actionlogList) {
+                Element targetActionlog = document.createElement("Actionlog");
+                targetActionlog.setAttribute("Type", log.getType().toString());
+                targetActionlog.setAttribute("Date", TimeUtil.format(log.getDate(), "yyyy-MM-dd"));
+                targetActionlog.setAttribute("Additional", log.getAdditional());
+                setChild(actionlogs, targetActionlog);
+            }
+            setChild(root, actionlogs);
+
+            Element works = document.createElement("Works");
+            List<Work> workList = member.getWorks();
+            for (Work work : workList) {
+                Element targetWork = document.createElement("Work");
+                targetWork.setAttribute("Type", work.getType().toString());
+                targetWork.setAttribute("Url", work.getUrl());
+                targetWork.setAttribute("Date", TimeUtil.format(work.getDate(), "yyyy-MM-dd"));
+                targetWork.setAttribute("Highlight", work.getHighlight().toString());
+                targetWork.setAttribute("Rating", work.getRating());
+
+                List<TagType> tagList = work.getTags();
+                if (!tagList.isEmpty()) {
+                    Element tags = document.createElement("Tags");
+                    for (TagType tag : tagList) {
+                        Element targetTag = document.createElement("Tag");
+                        targetTag.setAttribute("Type", tag.toString());
+                        setChild(tags, targetTag);
+                    }
+                    setChild(targetWork, tags);
+                }
+                setChild(works, targetWork);
+            }
+            setChild(root, works);
+
+            document.appendChild(root);
+            return save(document, output);
+        }
+        return false;
     }
 
 }

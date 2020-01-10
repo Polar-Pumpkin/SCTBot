@@ -1,7 +1,6 @@
 package org.serverct.config;
 
 import lombok.Getter;
-import org.dom4j.DocumentException;
 import org.serverct.SCTBot;
 import org.serverct.data.Actionlog;
 import org.serverct.data.ContactDetail;
@@ -25,7 +24,7 @@ public class MemberManager {
         return instance;
     }
 
-    @Getter private File dataFolder = new File("D:\\test\\Members");
+    @Getter private File dataFolder = new File(SCTBot.CQ.getAppDirectory() + File.separator + "Members");
     private Map<Long, SCTMember> loadMemberMap = new HashMap<>();
 
     public int load() {
@@ -38,12 +37,8 @@ public class MemberManager {
 
         if(files != null) {
             for(File file : files) {
-                try {
-                    SCTMember member = XMLUtil.loadMember(file);
-                    loadMemberMap.put(Long.parseLong(member.getContacts().get("QQ").getIdNumber()), member);
-                } catch (DocumentException e) {
-                    e.printStackTrace();
-                }
+                SCTMember member = XMLUtil.loadMember(file);
+                loadMemberMap.put(Long.parseLong(member.getContacts().get("QQ").getIdNumber()), member);
             }
         }
         return loadMemberMap.size();
