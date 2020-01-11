@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE SCTMember SYSTEM "config.dtd">
 <SCTMember>
     <Nickname Value="示例组员"/>
     <Birth Date="2000-1-1"/>

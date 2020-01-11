@@ -1,0 +1,27 @@
+<!ELEMENT SCTMember (Nickname,Birth,Departments,PPoint,Contacts,Actionlogs,Works)>
+<!ELEMENT Nickname (#PCDATA)>
+<!ELEMENT Birth (#PCDATA)>
+<!ELEMENT Departments (Department+)>
+<!ELEMENT Department (#PCDATA)>
+<!ELEMENT PPoint (#PCDATA)>
+<!ELEMENT Contacts (BBS,QQ,Wechat)>
+<!ELEMENT BBS (#PCDATA)>
+<!ELEMENT QQ (#PCDATA)>
+<!ELEMENT Wechat (#PCDATA)>
+<!ELEMENT Actionlogs (Actionlog*)>
+<!ELEMENT Actionlog (#PCDATA)>
+<!ELEMENT Works (Work*)>
+<!ELEMENT Work (Tags)>
+<!ELEMENT Tags (Tag+)>
+<!ELEMENT Tag (#PCDATA)>
+
+<!ATTLIST Nickname Value CDATA #REQUIRED>
+<!ATTLIST Birth Date CDATA #REQUIRED>
+<!ATTLIST Department ID CDATA #REQUIRED Position CDATA "部员">
+<!ATTLIST PPoint Amount CDATA #REQUIRED>
+<!ATTLIST BBS Username CDATA #REQUIRED ID CDATA #REQUIRED>
+<!ATTLIST QQ ID CDATA #REQUIRED>
+<!ATTLIST Wechat ID CDATA #REQUIRED>
+<!ATTLIST Actionlog Type CDATA #REQUIRED Date CDATA #REQUIRED Additional CDATA #REQUIRED>
+<!ATTLIST Work Type CDATA #REQUIRED Url CDATA #REQUIRED Date CDATA #REQUIRED Highlight CDATA #REQUIRED Rating CDATA #REQUIRED>
+<!ATTLIST Tag Type CDATA #REQUIRED>
