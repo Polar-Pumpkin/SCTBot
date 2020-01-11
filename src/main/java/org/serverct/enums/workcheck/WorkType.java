@@ -1,4 +1,4 @@
-package org.serverct.enums;
+package org.serverct.enums.workcheck;
 
 import lombok.Getter;
 

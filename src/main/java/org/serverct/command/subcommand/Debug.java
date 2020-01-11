@@ -1,8 +1,8 @@
 package org.serverct.command.subcommand;
 
-import oracle.jrockit.jfr.StringConstantPool;
 import org.serverct.SCTBot;
 import org.serverct.command.Subcommand;
+import org.serverct.config.ConfigManager;
 import org.serverct.config.MemberManager;
 import org.serverct.utils.BasicUtil;
 
@@ -46,6 +46,11 @@ public class Debug implements Subcommand {
                     case "path":
                     case "配置目录":
                         SCTBot.CQ.sendGroupMsg(SCTBot.SCT, MemberManager.getInstance().getDataFolder().getAbsolutePath());
+                        break;
+                    case "c":
+                    case "config":
+                    case "配置文件":
+                        SCTBot.CQ.sendGroupMsg(SCTBot.SCT, ConfigManager.getInstance().getSettings().toString());
                         break;
                     default:
                         SCTBot.CQ.sendGroupMsg(SCTBot.SCT, "未定义输出信息类型.");

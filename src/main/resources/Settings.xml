@@ -4,22 +4,22 @@
         <Subscription Target="newthread">
             <Interval Hour="1"/> <!-- RSS订阅时间间隔(h) -->
             <Broadcast>
-                通知 | Notification
-                组员 %Author% 发布了新作品(%PostType%):
-                > %PostTitle%
+                通知 | Notification\n
+                组员 %Author% 发布了新作品(%PostType%):\n
+                > %PostTitle%\n\n
 
-                已自动登记入本季度作品检查. ^_^
+                已自动登记入本季度作品检查. ^_^\n
                 > %url%
             </Broadcast>
         </Subscription>
         <Subscription Target="Digest">
             <Interval Hour="168"/>
             <Broadcast>
-                喜报 | Congratulation
-                组员 %Author% 的作品(%PostType%) 获得了精华:
-                > %PostTitle%
+                喜报 | Congratulation\n
+                组员 %Author% 的作品(%PostType%) 获得了精华:\n
+                > %PostTitle%\n\n
 
-                已自动登记入本季度作品检查. ^_^
+                已自动登记入本季度作品检查. ^_^\n
                 > %url%
             </Broadcast>
         </Subscription>
@@ -80,7 +80,7 @@
     </Workcheck>
 
     <Admins>
-        <Admin Value="1224748848"/>
-        <Admin Value="3023937153"/>
+        <Admin QQ="1224748848"/>
+        <Admin QQ="3023937153"/>
     </Admins>
 </Setting>

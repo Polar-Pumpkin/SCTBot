@@ -1,8 +1,8 @@
-package org.serverct.enums;
+package org.serverct.enums.memberdata;
 
 import lombok.Getter;
 
-public enum ActionlogType {
+public enum Actionlog {
     JOIN("加入小组"),
     QUIT("退出小组"),
     PPOINT("P点数异动"),
@@ -12,7 +12,7 @@ public enum ActionlogType {
     ;
 
     private @Getter String name;
-    ActionlogType(String desc) {
+    Actionlog(String desc) {
         name = desc;
     }
 }

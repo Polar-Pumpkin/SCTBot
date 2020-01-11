@@ -2,13 +2,12 @@ package org.serverct.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.serverct.enums.ActionlogType;
 
 import java.util.Calendar;
 
 public @Data @AllArgsConstructor class Actionlog {
 
-    ActionlogType type;
+    org.serverct.enums.memberdata.Actionlog type;
     Calendar date;
     String additional;
 }

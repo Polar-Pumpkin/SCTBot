@@ -1,8 +1,8 @@
-package org.serverct.enums;
+package org.serverct.enums.workcheck;
 
 import lombok.Getter;
 
-public enum TagType {
+public enum Tag {
     NONE("无"),
     EXCELLENT("优秀"),
     ESSENCE("精华"),
@@ -11,7 +11,7 @@ public enum TagType {
 
     private @Getter
     String name;
-    TagType(String desc) {
+    Tag(String desc) {
         name = desc;
     }
 }

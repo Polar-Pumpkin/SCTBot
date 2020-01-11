@@ -1,8 +1,8 @@
-package org.serverct.enums;
+package org.serverct.enums.workcheck;
 
 import lombok.Getter;
 
-public enum HighlightType {
+public enum Highlight {
     BOLD("比普通好点(加粗)"),
     GREEN("优异(绿色)"),
     GREEN_BOLD("优秀(绿色加粗)"),
@@ -17,7 +17,7 @@ public enum HighlightType {
 
     private @Getter
     String name;
-    HighlightType(String desc) {
+    Highlight(String desc) {
         name = desc;
     }
 }
