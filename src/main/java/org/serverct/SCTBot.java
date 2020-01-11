@@ -51,6 +51,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 返回应用的ApiVer、Appid
      */
+    @Override
     public String appInfo() {
         // 应用AppID,规则见 http://d.cqp.me/Pro/开发/基础信息#appid
         String AppID = "org.serverct.bot";// 记住编译后的文件和json也要使用appid做文件名
@@ -69,6 +70,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 请固定返回0
      */
+    @Override
     public int startup() {
         // 获取应用数据目录(无需储存数据时，请将此行注释)
         // String appDirectory = CQ.getAppDirectory();
@@ -87,6 +89,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 请固定返回0，返回后酷Q将很快关闭，请不要再通过线程等方式执行其他代码。
      */
+    @Override
     public int exit() {
         return 0;
     }
@@ -99,6 +102,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 请固定返回0。
      */
+    @Override
     public int enable() {
         enable = true;
         return 0;
@@ -112,6 +116,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      *
      * @return 请固定返回0。
      */
+    @Override
     public int disable() {
         enable = false;
         return 0;
@@ -131,6 +136,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * 注意：应用优先级设置为"最高"(10000)时，不得使用本返回值<br>
      * 如果不回复消息，交由之后的应用/过滤器处理，这里 返回  {@link IMsg#MSG_IGNORE MSG_IGNORE} - 忽略本条消息
      */
+    @Override
     public int privateMsg(int subType, int msgId, long fromQQ, String msg, int font) {
         CommandHandler.getInstance().active(fromQQ, msg, false);
         return MSG_IGNORE;
@@ -149,6 +155,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param font          字体
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int groupMsg(int subType, int msgId, long fromGroup, long fromQQ, String fromAnonymous, String msg,
                         int font) {
         // 如果消息来自匿名者
@@ -184,6 +191,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param font        字体
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int discussMsg(int subtype, int msgId, long fromDiscuss, long fromQQ, String msg, int font) {
         // 这里处理消息
 
@@ -201,6 +209,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param file      上传文件信息
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int groupUpload(int subType, int sendTime, long fromGroup, long fromQQ, String file) {
         GroupFile groupFile = CQ.getGroupFile(file);
         if (groupFile == null) { // 解析群文件信息，如果失败直接忽略该消息
@@ -220,6 +229,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param beingOperateQQ 被操作QQ
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int groupAdmin(int subtype, int sendTime, long fromGroup, long beingOperateQQ) {
         // 这里处理消息
 
@@ -237,6 +247,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param beingOperateQQ 被操作QQ
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int groupMemberDecrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ) {
         // 这里处理消息
 
@@ -254,6 +265,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param beingOperateQQ 被操作QQ(即加群的QQ)
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int groupMemberIncrease(int subtype, int sendTime, long fromGroup, long fromQQ, long beingOperateQQ) {
         // 这里处理消息
 
@@ -269,6 +281,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param fromQQ   来源QQ
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int friendAdd(int subtype, int sendTime, long fromQQ) {
         // 这里处理消息
 
@@ -286,6 +299,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param responseFlag 反馈标识(处理请求用)
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int requestAddFriend(int subtype, int sendTime, long fromQQ, String msg, String responseFlag) {
         // 这里处理消息
 
@@ -310,6 +324,7 @@ public class SCTBot extends JcqAppAbstract implements ICQVer, IMsg, IRequest {
      * @param responseFlag 反馈标识(处理请求用)
      * @return 关于返回值说明, 见 {@link #privateMsg 私聊消息} 的方法
      */
+    @Override
     public int requestAddGroup(int subtype, int sendTime, long fromGroup, long fromQQ, String msg,
                                String responseFlag) {
         // 这里处理消息
