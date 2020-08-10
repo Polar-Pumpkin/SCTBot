@@ -239,7 +239,15 @@ public class MemberManager {
     }
 
     public static SCTMember loadMember(File file) {
+        String[] report = {
+                "    > 加载成员档案文件...",
+                "      > 文件名: " + file.getName(),
+                "      > 大小: " + file.getUsableSpace() + "/" + file.getTotalSpace(),
+                "      > 绝对路径: " + file.getAbsolutePath(),
+        };
+        BasicUtil.debug(report, true);
         Document memberDoc = XMLUtil.load(file);
+        XMLUtil.details(memberDoc);
         Element sctMember = memberDoc.getDocumentElement();
 
         Node nickname = XMLUtil.getNode(sctMember, "Nickname");
